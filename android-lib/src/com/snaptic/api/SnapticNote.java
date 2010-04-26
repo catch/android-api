@@ -44,6 +44,8 @@ public class SnapticNote {
 	public CharSequence summary;
 	public long depth;
 	public long children;
+	public CharSequence mode;
+	public CharSequence publicUrl;
 
 	public double latitude;
 	public double longitude;
@@ -53,7 +55,7 @@ public class SnapticNote {
 	public double accuracyPosition;
 	public double accuracyAltitude;
 
-	public List<CharSequence> labels;
+	public List<CharSequence> tags;
 	public List<Object> mediaList;
 
 	public SnapticNote() {
@@ -69,6 +71,8 @@ public class SnapticNote {
 		summary = NOT_SET;
 		depth = -1;
 		children = -1;
+		mode = "private";
+		publicUrl = NOT_SET;
 
 		latitude = 0;
 		longitude = 0;
@@ -78,24 +82,24 @@ public class SnapticNote {
 		accuracyPosition = 0;
 		accuracyAltitude = 0;
 
-		labels = null;
+		tags = null;
 		mediaList = null;
 	}
 
 	/**
-	 * Return labels contained within note.
+	 * Return tags contained within note.
 	 * 
-     * @return CharSequence of labels in note
+     * @return CharSequence of tags in note
 	 */	
-	public CharSequence getLabels() {
-		if (labels == null) {
+	public CharSequence getTags() {
+		if (tags == null) {
 			return "";
 		}
 		
 		StringBuffer sb = new StringBuffer();
 
-		for (CharSequence label : labels) {
-			sb.append(label + " ");
+		for (CharSequence tag : tags) {
+			sb.append(tag + " ");
 		}
 
 		return sb.toString().trim();
@@ -132,6 +136,8 @@ public class SnapticNote {
 			this.summary = note.summary;
 			this.depth = note.depth;
 			this.children = note.children;
+			this.mode = note.mode;
+			this.publicUrl = note.publicUrl;
 
 			this.latitude = note.latitude;
 			this.longitude = note.longitude;
@@ -141,7 +147,7 @@ public class SnapticNote {
 			this.accuracyPosition = note.accuracyPosition;
 			this.accuracyAltitude = note.accuracyAltitude;
 
-			this.labels = note.labels;
+			this.tags = note.tags;
 			this.mediaList = note.mediaList;
 		}
 	}
@@ -165,6 +171,8 @@ public class SnapticNote {
 			" summary:" + summary +
 			" depth:" + depth +
 			" children:" + children +
+			" mode: " + mode +
+			" publicUrl: " + publicUrl +
 			" latitude:" + latitude +
 			" longitude:" + longitude +
 			" altitude:" + altitude +
@@ -172,7 +180,7 @@ public class SnapticNote {
 			" bearing:" + bearing +
 			" accuracyPosition:" + accuracyPosition +
 			" accuracyAltitude:" + accuracyAltitude +
-			" labels:" + getLabels() +
+			" tags:" + getTags() +
 			" mediaList:" + mediaList;
 	}
 
@@ -188,6 +196,8 @@ public class SnapticNote {
 		this.summary = builder.summary;
 		this.depth = builder.depth;
 		this.children = builder.children;
+		this.mode = builder.mode;
+		this.publicUrl = builder.publicUrl;
 
 		this.latitude = builder.latitude;
 		this.longitude = builder.longitude;
@@ -197,7 +207,7 @@ public class SnapticNote {
 		this.accuracyPosition = builder.accuracyPosition;
 		this.accuracyAltitude = builder.accuracyAltitude;
 
-		this.labels = builder.labels;
+		this.tags = builder.tags;
 		this.mediaList = builder.mediaList;
 	}
 
@@ -215,6 +225,8 @@ public class SnapticNote {
 		private CharSequence summary;
 		private long depth;
 		private long children;
+		private CharSequence mode;
+		private CharSequence publicUrl;
 
 		private double latitude;
 		private double longitude;
@@ -224,7 +236,7 @@ public class SnapticNote {
 		private double accuracyPosition;
 		private double accuracyAltitude;
 
-		private List<CharSequence> labels;
+		private List<CharSequence> tags;
 		private List<Object> mediaList;
 
 		public Builder id(long id) {
@@ -287,6 +299,16 @@ public class SnapticNote {
 			return this;
 		}
 
+		public Builder mode(CharSequence mode) {
+			this.mode = mode;
+			return this;
+		}
+		
+		public Builder publicUrl(CharSequence publicUrl) {
+			this.publicUrl = publicUrl;
+			return this;
+		}
+		
 		public Builder latitude(double latitude) {
 			this.latitude = latitude;
 			return this;
@@ -322,8 +344,8 @@ public class SnapticNote {
 			return this;
 		}
 
-		public Builder labels(List<CharSequence> labels) {
-			this.labels = labels;
+		public Builder labels(List<CharSequence> tags) {
+			this.tags = tags;
 			return this;
 		}
 

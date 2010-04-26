@@ -64,8 +64,10 @@ public class SnapticNotesXmlParser {
 	private static final String XML_TAG_USER = "user";
 	private static final String XML_TAG_USER_NAME = "user_name";
 	private static final String XML_TAG_CHILDREN = "children";
-	private static final String XML_TAG_LABELS = "labels";
-	private static final String XML_TAG_LABEL = "label";
+	private static final String XML_TAG_MODE = "mode";
+	private static final String XML_TAG_PUBLIC_URL = "public_url";
+	private static final String XML_TAG_TAGS = "tags";
+	private static final String XML_TAG_TAG = "tag";
 	private static final String XML_TAG_MEDIA = "media";
 	private static final String XML_TAG_IMAGE = "image";
 	private static final String XML_TAG_SRC = "src";
@@ -192,14 +194,22 @@ public class SnapticNotesXmlParser {
 					long childCount = Long.parseLong(parser.nextText());
 					note.children = childCount;
 					parse_trace("Child count is " + note.children);
+				} else if (XML_TAG_MODE.equals(startTag)) {
+					String mode = parser.nextText();
+					note.mode = mode;
+					parse_trace("Mode is " + note.mode);
+				} else if (XML_TAG_PUBLIC_URL.equals(startTag)) {
+					String publicUrl = parser.nextText();
+					note.publicUrl = publicUrl;
+					parse_trace("Public URL is " + note.publicUrl);
 				}
 				// new blocks:
 				else if (XML_TAG_USER.equals(startTag)) {
 					parse_trace("Parsing note owner data.");
 					parseNoteOwner(parser, note);
-				} else if (XML_TAG_LABELS.equals(startTag)) {
-					parse_trace("Parsing note labels.");
-					parseLabels(parser, note);
+				} else if (XML_TAG_TAGS.equals(startTag)) {
+					parse_trace("Parsing note tags.");
+					parseTags(parser, note);
 				} else if (XML_TAG_LOCATION.equals(startTag)) {
 					parse_trace("Parsing geotag.");
 					parseLocation(parser, note);
@@ -222,27 +232,27 @@ public class SnapticNotesXmlParser {
 		}
 	}
 
-	private void parseLabels(XmlPullParser parser, SnapticNote note)
+	private void parseTags(XmlPullParser parser, SnapticNote note)
 	throws XmlPullParserException, IOException {
-		ArrayList<CharSequence> labels = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> tags = new ArrayList<CharSequence>();
 		int eventType = parser.next();
 
 		while (eventType != XmlPullParser.END_DOCUMENT) {
 			if (eventType == XmlPullParser.START_TAG) {
 				String startTag = parser.getName();
 
-				if (XML_TAG_LABEL.equals(startTag)) {
-					String label = parser.nextText();
-					labels.add(label);
-					parse_trace("Added label \"" + label + '"');
+				if (XML_TAG_TAG.equals(startTag)) {
+					String tag = parser.nextText();
+					tags.add(tag);
+					parse_trace("Added tag \"" + tag + '"');
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
 
-				if (XML_TAG_LABELS.equals(endTag)) {
-					note.labels = labels;
-					parse_trace("Note had " + note.labels.size()
-							+ " label(s).");
+				if (XML_TAG_TAGS.equals(endTag)) {
+					note.tags = tags;
+					parse_trace("Note had " + note.tags.size()
+							+ " tag(s).");
 				}
 
 				break;
