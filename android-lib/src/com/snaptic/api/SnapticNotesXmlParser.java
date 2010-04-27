@@ -59,6 +59,7 @@ public class SnapticNotesXmlParser {
 	private static final String XML_TAG_ID = "id";
 	private static final String XML_TAG_PARENT_ID = "parent_id";
 	private static final String XML_TAG_SOURCE = "source";
+	private static final String XML_TAG_SOURCE_URL = "source_url";
 	private static final String XML_TAG_TEXT = "text";
 	private static final String XML_TAG_SUMMARY = "summary";
 	private static final String XML_TAG_USER = "user";
@@ -166,6 +167,10 @@ public class SnapticNotesXmlParser {
 					String source = parser.nextText();
 					note.source = source;
 					parse_trace("Note source is " + note.source);
+				} else if (XML_TAG_SOURCE_URL.equals(startTag)) {
+					String sourceUrl = parser.nextText();
+					note.sourceUrl = sourceUrl;
+					parse_trace("Note source URL is " + note.sourceUrl);
 				} else if (XML_TAG_CREATED.equals(startTag)) {
 					String creationTime = parser.nextText();
 					note.creationTime = parse3339(creationTime);

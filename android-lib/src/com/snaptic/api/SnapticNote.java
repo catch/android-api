@@ -35,6 +35,7 @@ public class SnapticNote {
 	public long id;
 	public long parentId;
 	public CharSequence source;
+	public CharSequence sourceUrl;
 	public CharSequence owner;
 	public long ownerId;
 	public long creationTime;
@@ -62,6 +63,7 @@ public class SnapticNote {
 		id = -1;
 		parentId = -1;
 		source = NOT_SET;
+		sourceUrl = NOT_SET;
 		owner = NOT_SET;
 		ownerId = -1;
 		creationTime = -1;
@@ -138,6 +140,8 @@ public class SnapticNote {
 			this.children = note.children;
 			this.mode = note.mode;
 			this.publicUrl = note.publicUrl;
+			this.source = note.source;
+			this.sourceUrl = note.sourceUrl;
 
 			this.latitude = note.latitude;
 			this.longitude = note.longitude;
@@ -173,6 +177,8 @@ public class SnapticNote {
 			" children:" + children +
 			" mode: " + mode +
 			" publicUrl: " + publicUrl +
+			" source: " + source +
+			" sourceUrl: " + sourceUrl +
 			" latitude:" + latitude +
 			" longitude:" + longitude +
 			" altitude:" + altitude +
@@ -198,6 +204,8 @@ public class SnapticNote {
 		this.children = builder.children;
 		this.mode = builder.mode;
 		this.publicUrl = builder.publicUrl;
+		this.source = builder.source;
+		this.sourceUrl = builder.sourceUrl;
 
 		this.latitude = builder.latitude;
 		this.longitude = builder.longitude;
@@ -214,8 +222,8 @@ public class SnapticNote {
 	public static class Builder {
 		private long id;
 		private long parentId;
-		@SuppressWarnings("unused")
 		private CharSequence source;
+		private CharSequence sourceUrl;
 		private CharSequence owner;
 		private long ownerId;
 		private long creationTime;
@@ -254,6 +262,11 @@ public class SnapticNote {
 			return this;
 		}
 
+		public Builder sourceUrl(CharSequence sourceUrl) {
+			this.sourceUrl = sourceUrl;
+			return this;
+		}
+		
 		public Builder owner(CharSequence owner) {
 			this.owner = owner;
 			return this;
