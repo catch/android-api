@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:orientation="horizontal">
+ 
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:id="@+id/DELWOD"
+		android:clickable="true"
+    	android:layout_width="wrap_content"
+	    android:layout_height="?android:attr/listPreferredItemHeight"
+	    android:gravity="center_vertical"
+	    android:paddingLeft="5dip"
+	    android:singleLine="true"/>
+	     
+ <TextView
+	android:id="@+id/WOD"
+	android:layout_width="wrap_content"
+	android:gravity="center_vertical"
+	android:layout_height="wrap_content"
+	android:layout_weight="1"
+	android:paddingLeft="5dip"
+	android:textSize="16dip"
+	android:text="Insert me man"
+	/>         
+	
+		<TextView android:id="@+id/NUM_WOD"
+         android:layout_width="50dip"
+         android:layout_height="wrap_content" android:layout_weight="1"/>
+ 
+    <TextView android:id="@+id/WEIGHT_DISTANCE"
+         android:layout_width="50dip"
+         android:layout_height="wrap_content"  android:layout_weight="1"/>
+         
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:id="@+id/ACTION"
+		android:clickable="true"
+    	android:layout_width="wrap_content"
+	    android:layout_height="?android:attr/listPreferredItemHeight"
+	    android:gravity="center_vertical"
+	    android:paddingLeft="5dip"
+	    android:singleLine="true"/>
+	
+</LinearLayout>
