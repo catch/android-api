@@ -66,13 +66,13 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 public class WorkoutEditor extends ListActivity {
 	
-	private static boolean 					  DEBUG 		= true; //Turn on/off debug messages
-	static final String 			  LOGCATNAME 	= "WODWhacker";//Debug message log name
-	ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		;//List of exercises displayed that constitute this workout.  
-	List<String> 							  mDisplayedDialogExercise	    ;//List of exercises which you can select from drop down menu to append to list.
-	List<Exercise>							  mExercises 					;//List of exercises, clean all this up -htormey
-	private String 							  mUsername = "testingtracker1";
-	private String 							  mPassword	= "abc123";
+	private static boolean 					          DEBUG 	= true; //Turn on/off debug messages
+	static final String 			  			  LOGCATNAME 	= "WODWhacker";//Debug message log name
+	ArrayList<HashMap<String, String>> 		  		  mDisplayedListOfExercises;//List of exercises displayed that constitute this workout.  
+	List<String> 							  mDisplayedDialogExercise;//List of exercises which you can select from drop down menu to append to list.
+	List<Exercise>							  mExercises;//List of exercises, clean all this up -htormey
+	private String 							  mUsername;
+	private String 							  mPassword;
 	
 	//Replace this with SimpleCursorAdapter or own custom implementation based on this. -htormey
 	private SimpleAdapter 					  mWorkOutEditorAdapter;
