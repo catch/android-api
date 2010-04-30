@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, WODWhackerActivity!</string>
+    <string name="app_name">WODWhacker</string>
+    <string name="wod_edit">WODEdit</string>
+    <string name="new_workout">Track Workout</string>
+</resources>
