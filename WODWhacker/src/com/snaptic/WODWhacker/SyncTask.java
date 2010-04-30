@@ -25,8 +25,8 @@ public class SyncTask extends AsyncTask<String, Integer, Boolean> {
         long totalSize = 0;
 
         //Test out snaptic API.
-        String username 				= "testingtracker1";
-        String password					= "abc123";
+        String username 				= "";
+        String password					= "";
         mApi							= new SnapticAPI(username, password);
         
         ArrayList<SnapticNote> notes 	= new ArrayList<SnapticNote>();

@@ -36,7 +36,7 @@
         android:ellipsize="marquee"  />
 
     <EditText android:id="@+id/WODTITLETXTAREA"
-    	android:text="Enter title for workout"
+    	android:hint="Enter title for workout"
     	android:editable="true"
     	android:singleLine="true"
 		android:inputType="text"

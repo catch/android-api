@@ -18,8 +18,9 @@
 		android:textSize="19.5dp"
 	/>    
 
+
     <EditText android:id="@+id/EXENUMEDIT"
-    	android:hint="Number"
+    	android:hint="Number of reps"
     	android:imeOptions="actionGo"
         android:layout_marginTop="2dip"
         android:layout_marginBottom="10dip"
@@ -31,9 +32,15 @@
         android:cursorVisible="true"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal"
-        android:inputType="number"/>
+        android:editable="true"
+    	android:singleLine="true"
+    	android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorSecondary"
+        android:inputType="number"/>  
+        
+              
         <EditText android:id="@+id/EXENUMWEIGHTEDIT"
-   		android:hint="Weight"
+   		android:hint="Weight or distance"
 		android:imeOptions="actionGo"
         android:layout_marginTop="2dip"
         android:layout_marginBottom="10dip"

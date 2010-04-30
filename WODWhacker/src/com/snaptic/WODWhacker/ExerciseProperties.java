@@ -91,7 +91,7 @@ public class ExerciseProperties extends Activity {
 		//Set the default text for the text area
 		if(mExerciseTextArea != null)
 		{
-			exerciseTextArea.setText(mExerciseTextArea);
+			//exerciseTextArea.setText(mExerciseTextArea);
 		}
 		
 		//passed exercise is a weight so turn on secondary edit text area to enter amount.

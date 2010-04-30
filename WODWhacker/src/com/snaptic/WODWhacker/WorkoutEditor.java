@@ -49,6 +49,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -66,9 +67,9 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 public class WorkoutEditor extends ListActivity {
 	
-	private static boolean 					          DEBUG 	= true; //Turn on/off debug messages
-	static final String 			  			  LOGCATNAME 	= "WODWhacker";//Debug message log name
-	ArrayList<HashMap<String, String>> 		  		  mDisplayedListOfExercises;//List of exercises displayed that constitute this workout.  
+	private static boolean 					  DEBUG 	= true; //Turn on/off debug messages
+	static final String 			  		  LOGCATNAME 	= "WODWhacker";//Debug message log name
+	ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises;//List of exercises displayed that constitute this workout.  
 	List<String> 							  mDisplayedDialogExercise;//List of exercises which you can select from drop down menu to append to list.
 	List<Exercise>							  mExercises;//List of exercises, clean all this up -htormey
 	private String 							  mUsername;
@@ -208,21 +209,22 @@ public class WorkoutEditor extends ListActivity {
 		}
 	}
 	
-	//Take list of displayed workouts, parse and write it to snaptic backend. This is a bit ghetto -htormey 
+	//Take list of displayed workouts, parse and write it to snaptic backend. This is a bit ghetto clean up-htormey 
 	private void serializeWorkoutAndPostToSnapticAccountStorage(){
 		
-		TextView title 	= (TextView) findViewById(R.id.EXETITLE);
+		EditText title 	= (EditText) findViewById(R.id.WODTITLETXTAREA);
 		String workOutString  	= new String();
+		String titleFromTextArea = title.getText().toString();
 		workOutString += "#Workout"+"\n";
-		//String workOutTitle ="#"; 
-		//workOutTitle += title.getText().toString() + "\n";
-		
+		String workOutTitle ="#" + titleFromTextArea + "\n";
+		workOutString += workOutTitle;
+		workOutString += titleFromTextArea + "\n";
+
 		Iterator listIterator = mDisplayedListOfExercises.iterator();
 			while(listIterator.hasNext()){
 
 				String value 			= null;
-				
-				//@+id/EXETITLE"
+
 				HashMap map				= ((HashMap)listIterator.next());
 				value 					= ((String)map.get("WOD"));
 				if(value != null){
@@ -240,10 +242,12 @@ public class WorkoutEditor extends ListActivity {
 				}
 				workOutString += "\n";
 				value = null;
-				if(DEBUG)Log.d(LOGCATNAME, "serializeWorkoutAndPostToSnapticAccountStorage: "+ workOutString);
+				
 
 			
 			}
+			
+			if(DEBUG)Log.d(LOGCATNAME, "serializeWorkoutAndPostToSnapticAccountStorage: "+ workOutString);
 			int returnCode;
 			SnapticNote note = new SnapticNote();
 			note.text		 = workOutString;
