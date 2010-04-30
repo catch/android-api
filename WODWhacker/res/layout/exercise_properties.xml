@@ -19,65 +19,73 @@
 	/>    
 
     <EditText android:id="@+id/EXENUMEDIT"
-    	android:text="10"
-    	android:editable="true"
-    	android:singleLine="true"
-		android:inputType="text"
-		android:imeOptions="actionGo"
+    	android:hint="Number"
+    	android:imeOptions="actionGo"
         android:layout_marginTop="2dip"
         android:layout_marginBottom="10dip"
         android:layout_marginLeft="5dip"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="?android:attr/textColorSecondary"
+        android:layout_width="200sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:cursorVisible="true"
-        android:digits="0123456789"
-       
-         />
-             <EditText android:id="@+id/EXENUMWEIGHTEDIT"
-   
-    	android:editable="true"
-    	android:singleLine="true"
-		android:inputType="text"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:inputType="number"/>
+        <EditText android:id="@+id/EXENUMWEIGHTEDIT"
+   		android:hint="Weight"
 		android:imeOptions="actionGo"
         android:layout_marginTop="2dip"
         android:layout_marginBottom="10dip"
         android:layout_marginLeft="5dip"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="?android:attr/textColorSecondary"
+        android:layout_width="200sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:visibility="invisible"
-                android:cursorVisible="true"
-        android:digits="0123456789"
+        android:visibility="gone"
+        android:cursorVisible="true"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:inputType="number"
          />
 
 	<Spinner
 		android:id="@+id/EXEUNITM"
 		android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="180sp"
 		android:layout_centerHorizontal="true"
-		android:visibility="invisible"
+		android:visibility="gone"
+		android:layout_gravity="center_horizontal"
 	 />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+	android:gravity="center_horizontal">
+		<LinearLayout
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content">
 			<Button
 				android:id="@+id/EXEOK"
-				android:text="Ok"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" />
-							<Button
+				android:text="OK"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal" />
+		</LinearLayout>
+		<LinearLayout
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content">
+			<Button
 				android:id="@+id/EXECANCEL"
 				android:text="Cancel"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" />
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal" />
+		</LinearLayout>
 	</LinearLayout>
 
 </LinearLayout>
