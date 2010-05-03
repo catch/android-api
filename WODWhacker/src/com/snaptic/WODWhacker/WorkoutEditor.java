@@ -40,8 +40,11 @@ import com.snaptic.api.SnapticNote;
 import android.app.AlertDialog.Builder;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -67,20 +70,22 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 public class WorkoutEditor extends ListActivity {
 	
-	private static boolean 					  DEBUG 	= true; //Turn on/off debug messages
+	private static boolean 					  DEBUG 		= true; //Turn on/off debug messages
 	static final String 			  		  LOGCATNAME 	= "WODWhacker";//Debug message log name
 	ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises;//List of exercises displayed that constitute this workout.  
 	List<String> 							  mDisplayedDialogExercise;//List of exercises which you can select from drop down menu to append to list.
 	List<Exercise>							  mExercises;//List of exercises, clean all this up -htormey
 	private String 							  mUsername;
 	private String 							  mPassword;
-	
+	private SyncTask 						  mSyncTask  = new SyncTask();//Movw this later -htormey 
 	//Replace this with SimpleCursorAdapter or own custom implementation based on this. -htormey
 	private SimpleAdapter 					  mWorkOutEditorAdapter;
 	private SnapticAPI						  mApi;
 	//Singleton pattern user to perserve state, needed because activities can get destroyed at any time.
 	private StateHolder 					  mStateHolder;
-	   
+	//Delete the private variables below here as I am just experimenting
+	private static int WORKOUT_EDITOR = 0, EXERCISE_PROPERTIES = 1, ASYNC_TASK = 2 ;
+	
 	
 	//Return instances of stateholder object used to preserve selected state between activities recreates.  
     @Override
@@ -112,6 +117,7 @@ public class WorkoutEditor extends ListActivity {
         	mUsername					= mStateHolder.mUsername;
         	mPassword					= mStateHolder.mPassword;
         	mApi						= mStateHolder.mApi;
+
         }
         
         parseDataFromSnaptic();
@@ -119,11 +125,11 @@ public class WorkoutEditor extends ListActivity {
         bindDataToExerciseChoicesButton();
 	}
 	
-	
+
 	//Process intent returned from dialog used for setting attributes of a given exercise. (i.e number of situps etc)
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		if(DEBUG)Log.d(LOGCATNAME, "onActivityResult resultCode: " + resultCode );
-		if(resultCode == RESULT_OK){
+
+		if(resultCode == RESULT_OK && requestCode ==  WORKOUT_EDITOR){
 			
 
 			String exerciseTitle					= data.getStringExtra("EXERCISE_TITLE");
@@ -180,37 +186,35 @@ public class WorkoutEditor extends ListActivity {
 		        mStateHolder.mDisplayedListOfExercises = mDisplayedListOfExercises;  
 		        mWorkOutEditorAdapter.notifyDataSetChanged();				
 			}
-
 		}
-
 	}
 	
 	//Load a bunch of pre defined exercises into the snaptic account. Only called if nothing is found.
-	private void populateSnapticAccountWithPreDefinedExercises(){
-		
-		List<Exercise> predefinedExercises = new ArrayList<Exercise>();
-		Exercise e 		= new Exercise("Run", Exercise.DISTANCE, Exercise.METRIC);
-		predefinedExercises.add(e);
-		e 		 		= new Exercise("Push Press", Exercise.WEIGHT, Exercise.METRIC);
-		predefinedExercises.add(e);
-		e 		 		= new Exercise("Situps", Exercise.NONE, Exercise.NONE);
-		predefinedExercises.add(e);
-		e 		 		= new Exercise("Double Unders", Exercise.NONE, Exercise.NONE);
-		predefinedExercises.add(e);	
-		e 		 		= new Exercise("Overhead Squat", Exercise.WEIGHT, Exercise.METRIC);
-		predefinedExercises.add(e);			
-
+	private Boolean populateSnapticAccountWithPreDefinedExercises(){
+		//Serialize existing exercies and post to backend? -htormey
 		int returnCode = 0;
+		Boolean result = false;
 		
-		for (Exercise post : predefinedExercises){
+		for (Exercise post : mExercises){
 			SnapticNote note = new SnapticNote();
 			note.text		 = post.serializeExerciseForSnaptic();
-			returnCode   = mApi.addNote(note); //Check return code log not done todo -htormey.
+			returnCode   	 = mApi.addNote(note); //Check return code log not done todo -htormey.
+			
+			if(returnCode == SnapticAPI.RESULT_OK){
+				result = true;
+			}
+			else{
+				if(DEBUG)Log.d(LOGCATNAME, "Sync error: " + SnapticAPI.resultToString(returnCode));
+				result = false;
+				break;//Break out of loop with error
+			}
 		}
+		
+		return result;
 	}
 	
 	//Take list of displayed workouts, parse and write it to snaptic backend. This is a bit ghetto clean up-htormey 
-	private void serializeWorkoutAndPostToSnapticAccountStorage(){
+	private Boolean serializeWorkoutAndPostToSnapticAccountStorage(){
 		
 		EditText title 	= (EditText) findViewById(R.id.WODTITLETXTAREA);
 		String workOutString  	= new String();
@@ -221,131 +225,71 @@ public class WorkoutEditor extends ListActivity {
 		workOutString += titleFromTextArea + "\n";
 
 		Iterator listIterator = mDisplayedListOfExercises.iterator();
-			while(listIterator.hasNext()){
+		while(listIterator.hasNext()){
 
-				String value 			= null;
+			String value 			= null;
 
-				HashMap map				= ((HashMap)listIterator.next());
-				value 					= ((String)map.get("WOD"));
-				if(value != null){
-					workOutString += value + " ";
-				}
-				value = null;
-				value 					= ((String) map.get("NUMWOD"));
-				if(value != null){
-					workOutString += value + " ";
-				}
-				value = null;
-				value 					= ((String) map.get("WEIGHTDISTANCE"));
-				if(value != null){
-					workOutString += value + " ";
-				}
-				workOutString += "\n";
-				value = null;
-				
-
-			
+			HashMap map				= ((HashMap)listIterator.next());
+			value 					= ((String)map.get("WOD"));
+			if(value != null){
+				workOutString += value + " ";
 			}
+			value = null;
+			value 					= ((String) map.get("NUMWOD"));
+			if(value != null){
+				workOutString += value + " ";
+			}
+			value = null;
+			value 					= ((String) map.get("WEIGHTDISTANCE"));
+			if(value != null){
+				workOutString += value + " ";
+			}
+			workOutString += "\n";
+			value = null;	
+		}
 			
-			if(DEBUG)Log.d(LOGCATNAME, "serializeWorkoutAndPostToSnapticAccountStorage: "+ workOutString);
-			int returnCode;
-			SnapticNote note = new SnapticNote();
-			note.text		 = workOutString;
-			returnCode   = mApi.addNote(note); 
-
+		if(DEBUG)Log.d(LOGCATNAME, "serializeWorkoutAndPostToSnapticAccountStorage: "+ workOutString);
+		int returnCode;
+		Boolean result = true; 
+		SnapticNote note = new SnapticNote();
+		note.text		 = workOutString;
+		returnCode   	 = mApi.addNote(note); 
+		
+		if(returnCode != SnapticAPI.RESULT_OK){
+			if(DEBUG)Log.d(LOGCATNAME, "Sync error: " + SnapticAPI.resultToString(returnCode));
+			result = false;
+		}
+		return result;
 	}
+	
 	//This class will be made async and move out of here, for now just parse stuff. -htormey
 	//Also parsing stuff is bit getto hackish, refactor.
-	private void parseDataFromSnaptic(){
+	private void parseDataFromSnaptic(){	
+		/*
+		 * First populate the list of exercises with a bunch of predefined exercises, this
+		 * will be loaded from a db in future. 
+		 * */
+		mExercises = new ArrayList<Exercise>();
+		Exercise e 		= new Exercise("Run", Exercise.DISTANCE, Exercise.METRIC);
+		mExercises.add(e);
+		mDisplayedDialogExercise.add(e.title);
+		e 		 		= new Exercise("Push Press", Exercise.WEIGHT, Exercise.METRIC);
+		mExercises.add(e);
+		mDisplayedDialogExercise.add(e.title);
+		e 		 		= new Exercise("Situps", Exercise.NONE, Exercise.NONE);
+		mExercises.add(e);
+		mDisplayedDialogExercise.add(e.title);
+		e 		 		= new Exercise("Double Unders", Exercise.NONE, Exercise.NONE);
+		mExercises.add(e);	
+		mDisplayedDialogExercise.add(e.title);
+		e 		 		= new Exercise("Overhead Squat", Exercise.WEIGHT, Exercise.METRIC);
+		mExercises.add(e);			
+		mDisplayedDialogExercise.add(e.title);
 		
-		if(!mStateHolder.synced)
-		{
-			//First entry is always this
-			//Check stateHolder and only add this stuff if it has not been parsed allready?
-
-			//Move all this into parsing function? -htormey
-			Pattern tagPattern 					= Pattern.compile("#");
-			Pattern tagDistance 				= Pattern.compile("Distance");
-			Pattern tagWeight					= Pattern.compile("Weight");
-			Pattern tagMetric					= Pattern.compile("Metric");
-			Pattern tagImperial					= Pattern.compile("Imperial");
-			Pattern tagExerciseDescription  	= Pattern.compile("Exercise_Description");
-			boolean exerciseDerscriptionsFound	= false;
-        
-			ArrayList<SnapticNote> notes 	= new ArrayList<SnapticNote>();
-        			
-			//Grab all notes from backend
-			int getNotesReturnCode 			= mApi.getNotes(notes);
-			
-			//Search for notes containing descriptions of exercises
-			for(SnapticNote n : notes){
-				String tags = n.getTags().toString();
-				Matcher exerciseDescriptionMatcher = tagExerciseDescription.matcher( tags );
-        	
-				if(exerciseDescriptionMatcher.find())
-				{
-					exerciseDerscriptionsFound = true;
-	        		String title 		= "";
-	        		int type 			= Exercise.NONE;
-	        		int unitType		= Exercise.NONE;
-	        		
-	        		String [] noteLines = n.text.toString().split("\n");
-	        		
-	        		for(String line : noteLines){
-	        			Matcher tagMatcher = tagPattern.matcher(line);
-	        			//If line is NOT a tag
-	        			if(!tagMatcher.find()){
-	        			
-	        				title = line;
-	        				
-	        				Log.d(LOGCATNAME, "Exercise Title:" + title );
-	        				
-	        				Matcher tagWeightMatcher 		= tagWeight.matcher( tags );
-	        				if(tagWeightMatcher.find())
-	        				{
-	        					Log.d(LOGCATNAME, "Exercise Weight found");
-	        					type = Exercise.WEIGHT;
-	        				}
-	        				Matcher tagDistanceMatcher 		= tagDistance.matcher( tags );
-	        				if(tagDistanceMatcher.find())
-	        				{
-	        					Log.d(LOGCATNAME, "Exercise Distance found");
-	        					type = Exercise.DISTANCE;
-	        				}
-	        				Matcher tagMetricMatcher 		= tagMetric.matcher( tags );
-	        				if(tagMetricMatcher.find())
-	        				{
-	        					Log.d(LOGCATNAME, "Exercise Metric found");
-	        					unitType = Exercise.METRIC;
-	        				}
-	        				Matcher tagImperialMatcher 		= tagImperial.matcher( tags );
-	        				if(tagImperialMatcher.find())
-	        				{
-	        					Log.d(LOGCATNAME, "Exercise Imperial found");
-	        					unitType = Exercise.IMPERIAL;
-	        				}
-	        			}
-	        		}
-	        		Exercise exercise = new Exercise(title, type, unitType);
-	        		mExercises.add(exercise);
-	        		mDisplayedDialogExercise.add(exercise.title);
-	        		
-	        	}   	
-			}
-			
-			//If no Exercises found populate snaptic account with some descriptions.
-			if(!exerciseDerscriptionsFound)
-			{
-				populateSnapticAccountWithPreDefinedExercises();
-				//Re sync notes again
-				 parseDataFromSnaptic();
-			}
-			else{
-				mStateHolder.mExercises 				= mExercises;
-				mStateHolder.mDisplayedDialogExercise	= mDisplayedDialogExercise;
-				mStateHolder.synced 					= true;
-			}
-		}
+		//Now kick off an async task in the background to fetch exercise descriptions from the 
+		//snaptic backend. 
+		 mSyncTask.execute(mUsername, mPassword);
+		
 	}
 	
 	//change this to take a dialog number. -htormey
@@ -380,7 +324,7 @@ public class WorkoutEditor extends ListActivity {
 	
 	//Sets up the list of exercises that constitute a workout. For now this takes no arguments, rewrite this in future.
 	private void bindDataToList() {
-		Log.d(LOGCATNAME, "Enter bindDataToList ");
+		if(DEBUG)Log.d(LOGCATNAME, "Enter bindDataToList ");
 		//Function will query the data based and return a cursor with information. For now just populate workout with default strings
 		//Instantiate Adapter
 		mWorkOutEditorAdapter	= new SimpleAdapter(this, mDisplayedListOfExercises,R.layout.wod_row, new String[] {"WOD", "DELWOD", "NUMWOD", "WEIGHTDISTANCE"}, 
@@ -412,9 +356,9 @@ public class WorkoutEditor extends ListActivity {
         				 //Delete exercise from list of exercise list when you click this item.
       		             public void onClick(View v) {
        			            int position = getListView().getPositionForView(v);
-      		                Log.d(LOGCATNAME, "Image ID when clicked: "+ v.getId());
+       			            if(DEBUG)Log.d(LOGCATNAME, "Image ID when clicked: "+ v.getId());
       		                Toast.makeText(getApplicationContext(), "Image selected @ position: " + position, Toast.LENGTH_SHORT).show(); 
-      		   		        Log.d(LOGCATNAME, "Position of image in list: "+ position);
+      		                if(DEBUG)Log.d(LOGCATNAME, "Position of image in list: "+ position);
       		   		        mDisplayedListOfExercises.remove(position);
       		   		        //mExercises.remove(position);
       		   		        mStateHolder.mDisplayedListOfExercises = mDisplayedListOfExercises;
@@ -434,11 +378,11 @@ public class WorkoutEditor extends ListActivity {
             public void onItemClick(AdapterView<?> parent, View v,
                     int position, long id) {
             		
-            		Log.d(LOGCATNAME, "Clicked by listview ");
+            		if(DEBUG)Log.d(LOGCATNAME, "Clicked by listview ");
                 }            
             
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-            		Log.d(LOGCATNAME, "Selected by listview ");
+            		if(DEBUG)Log.d(LOGCATNAME, "Selected by listview ");
             }
               });
 
@@ -457,15 +401,143 @@ public class WorkoutEditor extends ListActivity {
         getListView().setAdapter(mWorkOutEditorAdapter);
 	}
 	
-    private static class StateHolder {
-    		//Has workout editor state beem synced with snaptic
-    		boolean synced = false;
-    		ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		= new ArrayList<HashMap<String, String>>();//List of exercises displayed that constitute this workout.  
-    		List<String> 							  mDisplayedDialogExercise		= new ArrayList<String>();//List of exercises which yout can select from drop down menu to append to list.
-    		List<Exercise>							  mExercises					= new ArrayList<Exercise>();//List of exercises, clean all this up -htormey
-    		private String 							  mUsername 					= "";//Add your username here
-    		private String 							  mPassword						= "";//Add your password here
-    		private SnapticAPI 						  mApi							= new SnapticAPI(mUsername, mPassword);
 
+    /*
+    -Params, the type of the parameters sent to the task upon execution.
+    -Progress, the type of the progress units published during the background computation.
+    -Result, the type of the result of the background computation.
+    */
+
+    public class SyncTask extends AsyncTask<String, Integer, Boolean> {
+    	  protected Boolean doInBackground(String... params) {
+    	        Boolean result 					= false;
+    		  	String username 				= params[0];
+    	        String password					= params[1];
+    	        if(DEBUG)Log.d(LOGCATNAME, "Do in background with username: "+ username + " and password: " + password);
+    	       
+
+    			if(!mStateHolder.synced)
+    			{
+    				List<Exercise> predefinedExercises 	= new ArrayList<Exercise>();
+    				mApi								= new SnapticAPI(username, password);//I don't need to create this again here -htormey
+    				ArrayList<SnapticNote> notes 		= new ArrayList<SnapticNote>();
+	    			Pattern tagPattern 					= Pattern.compile("#");
+	    			Pattern tagDistance 				= Pattern.compile("Distance");
+	    			Pattern tagWeight					= Pattern.compile("Weight");
+	    			Pattern tagMetric					= Pattern.compile("Metric");
+	    			Pattern tagImperial					= Pattern.compile("Imperial");
+	    			Pattern tagExerciseDescription  	= Pattern.compile("Exercise_Description");
+	    			
+	    			boolean exerciseDerscriptionsFound	= false;
+	    			int getNotesReturnCode 				= mApi.getNotes(notes);
+
+	    			//Only proceed if notes were fetched
+	    			if(getNotesReturnCode == SnapticAPI.RESULT_OK)
+	    			{
+		    			//Search for notes containing descriptions of exercises
+		    			for(SnapticNote n : notes){
+		    				String tags = n.getTags().toString();
+		    				Matcher exerciseDescriptionMatcher = tagExerciseDescription.matcher( tags );
+		            	
+		    				if(exerciseDescriptionMatcher.find())
+		    				{
+		    					exerciseDerscriptionsFound = true;
+		    	        		String title 		= "";
+		    	        		int type 			= Exercise.NONE;
+		    	        		int unitType		= Exercise.NONE;
+		    	        		
+		    	        		String [] noteLines = n.text.toString().split("\n");
+		    	        		
+		    	        		for(String line : noteLines){
+		    	        			Matcher tagMatcher = tagPattern.matcher(line);
+		    	        			//If line is NOT a tag
+		    	        			if(!tagMatcher.find()){
+		    	        			
+		    	        				title = line;
+		    	        				
+		    	        				Log.d(LOGCATNAME, "Exercise Title:" + title );
+		    	        				
+		    	        				Matcher tagWeightMatcher 		= tagWeight.matcher( tags );
+		    	        				if(tagWeightMatcher.find())
+		    	        				{
+		    	        					Log.d(LOGCATNAME, "Exercise Weight found");
+		    	        					type = Exercise.WEIGHT;
+		    	        				}
+		    	        				Matcher tagDistanceMatcher 		= tagDistance.matcher( tags );
+		    	        				if(tagDistanceMatcher.find())
+		    	        				{
+		    	        					Log.d(LOGCATNAME, "Exercise Distance found");
+		    	        					type = Exercise.DISTANCE;
+		    	        				}
+		    	        				Matcher tagMetricMatcher 		= tagMetric.matcher( tags );
+		    	        				if(tagMetricMatcher.find())
+		    	        				{
+		    	        					Log.d(LOGCATNAME, "Exercise Metric found");
+		    	        					unitType = Exercise.METRIC;
+		    	        				}
+		    	        				Matcher tagImperialMatcher 		= tagImperial.matcher( tags );
+		    	        				if(tagImperialMatcher.find())
+		    	        				{
+		    	        					Log.d(LOGCATNAME, "Exercise Imperial found");
+		    	        					unitType = Exercise.IMPERIAL;
+		    	        				}
+		    	        			}
+		    	        		}
+		    	        		Exercise exercise = new Exercise(title, type, unitType);
+		    	        		predefinedExercises.add(exercise);
+		    	        		
+		    	        		
+		    	        	}   	
+		    			}
+		    			//Replace the existing exercise list with the newly synced one
+		    			if(exerciseDerscriptionsFound)
+		    			{
+		    				List<String> displayedDialogExercise = new ArrayList<String>();
+		    				mExercises = predefinedExercises;
+		    	   	        for(Exercise exercise : predefinedExercises){
+		    	   	        	displayedDialogExercise.add(exercise.title);
+		        	        }
+		    	   	        mDisplayedDialogExercise = displayedDialogExercise;
+		    	   	        
+		    	   	        //Not sure if this is the right place to put this -htormey
+		    	   	        result = mStateHolder.synced	= true;
+		    			}
+		    			else
+		    			{
+		    				//Populate the snaptic backend with the predefined exercises
+		    				result = populateSnapticAccountWithPreDefinedExercises();
+		    				mStateHolder.synced	= result;
+		    			}
+	    			}
+	    			else
+	    			{	    				
+	    			 	//Log error 
+	    				if(DEBUG)Log.d(LOGCATNAME, "Sync error: " + SnapticAPI.resultToString(getNotesReturnCode));
+	    				result = false;
+	    			}
+	    		}
+
+    		  
+    		  return result;
+    	}
+    	  protected void onProgressUpdate(Integer... progress) {}
+    	  protected void onPostExecute(Boolean syncStatus) {
+    		  if(syncStatus){
+    			  Log.d(LOGCATNAME, "onPostExecute: Sync successfull");
+    		  }else{
+    			  Log.d(LOGCATNAME, "onPostExecute: Sync failed");
+    		  }    		  
+    	  }
+    	    
+    }
+    private static class StateHolder {
+		//Has workout editor state beem synced with snaptic
+		boolean synced = false;
+		ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		= new ArrayList<HashMap<String, String>>();//List of exercises displayed that constitute this workout.  
+		List<String> 							  mDisplayedDialogExercise		= new ArrayList<String>();//List of exercises which yout can select from drop down menu to append to list.
+		List<Exercise>							  mExercises					= new ArrayList<Exercise>();//List of exercises, clean all this up -htormey
+		private String 							  mUsername 					= "";//Add your username here
+		private String 							  mPassword						= "";//Add your password here
+		private SnapticAPI 						  mApi							= new SnapticAPI(mUsername, mPassword);
     }
 }
