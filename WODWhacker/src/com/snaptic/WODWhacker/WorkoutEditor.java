@@ -119,7 +119,7 @@ public class WorkoutEditor extends ListActivity {
 	    	
 	    	// Don't bother initiating a sync if there is no connectivity.
 	    	if (cm != null && cm.getActiveNetworkInfo() != null) {
-	    		parseDataFromSnaptic();  
+	    		//parseDataFromSnaptic(); Do Nothing for now. -htormey  
 	    	} else {
 	    		Toast.makeText(getListView().getContext(),
 	    				R.string.toast_no_network,
@@ -130,7 +130,6 @@ public class WorkoutEditor extends ListActivity {
         return true;
 
       case R.id.menu_item_settings: {
-     //   startActivity(new Intent(NotePreferences.SETTINGS));
     	  startActivityForResult(new Intent("com.snaptic.WODWhacker.intent.action.SIGN_IN"), REQUEST_RESULT_SIGN_IN);
         return true;
       }
@@ -141,74 +140,6 @@ public class WorkoutEditor extends ListActivity {
     return super.onOptionsItemSelected(item);
   }
 
- 
-    /*	// Our message handler.
-     //Centralize error handling/Logging?
-    	private static final int SYNC_SUCCESS = 0;
-	private static final int SYNC_FAIL = 1;
-	private static final int SYNC_ERROR = 2;
-	private static final int SYNC_ERROR_RESPONSE = 3;
-	private static final int RESET_ERROR = 4;
-	private static final int RESET_SUCCESS = 5;
-	private static final int DO_SYNC	 = 6;
-
-	private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			Button signInButton = (Button)findViewById(R.id.sign_in_button);
-			
-			switch (msg.what) {
-				case LOGIN_FAIL:
-				    Toast.makeText(getApplicationContext(),
-				    		R.string.sign_in_failed,
-				    		Toast.LENGTH_LONG).show();
-
-					signInButton.setEnabled(true);
-					signInButton.setText(R.string.snaptic_sign_in_button);
-				    
-					break;
-				case LOGIN_SUCCESS:
-					Toast.makeText(getApplicationContext(),
-							R.string.sign_in_success,
-							Toast.LENGTH_SHORT).show();
-					setResult(RESULT_OK);
-					finish();
-					break;
-				case LOGIN_ERROR:
-				    Toast.makeText(getApplicationContext(),
-				    		R.string.sign_in_error,
-				    		Toast.LENGTH_LONG).show();
-					signInButton.setEnabled(true);
-					signInButton.setText(R.string.snaptic_sign_in_button);
-					break;
-				case LOGIN_ERROR_RESPONSE:
-				    Toast.makeText(getApplicationContext(),
-				    		R.string.sign_in_error,
-				    		Toast.LENGTH_LONG).show();
-				    Log.e(getString(R.string.app_name), "problem with API response attempting sign-in");
-					signInButton.setEnabled(true);
-					signInButton.setText(R.string.snaptic_sign_in_button);
-					break;
-				case RESET_SUCCESS:
-					Toast.makeText(getApplicationContext(),
-							R.string.sign_in_reset_password_success,
-							Toast.LENGTH_LONG).show();
-					break;
-				case RESET_ERROR:
-				    Toast.makeText(getApplicationContext(),
-				    		R.string.sign_in_reset_password_error,
-				    		Toast.LENGTH_LONG).show();
-					break;
-				case DO_LOGIN:
-				    signIn();
-					break;
-				default:
-					super.handleMessage(msg);
-					break;
-			}
-		}
-	};
-*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
