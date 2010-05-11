@@ -131,7 +131,6 @@ public class SnapticAPI {
 	/**
 	 * Get information about a users account (i.e user name, date created, etc).
 	 * 
- 	 * @param email  email address used to register snaptic account.
  	 * @param  SnapticAccount data structure containing username/password.
      * @return int returnCode enum code indicating whether call was successful or not.
 	 */	
@@ -155,6 +154,7 @@ public class SnapticAPI {
 					account.id = user.getLong("id");
 					account.username = user.getString("user_name");
 					account.email = user.getString("email");
+					//account.password = password;
 					account.accountCreatedOn = parse3339(user.getString("created_at")); 
 					parseResult = true;
 				} catch (JSONException e) {

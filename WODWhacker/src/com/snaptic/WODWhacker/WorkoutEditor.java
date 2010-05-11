@@ -1,4 +1,4 @@
-package com.snaptic.WODWhacker;
+	package com.snaptic.WODWhacker;
 /*
  * Copyright (c) 2010 Snaptic, Inc
  *
@@ -34,6 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import com.snaptic.account.AccountUtil;
+import com.snaptic.account.AndroidAccount;
 import com.snaptic.api.SnapticAPI;
 import com.snaptic.api.SnapticNote;
 
@@ -44,9 +46,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -70,29 +77,138 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 public class WorkoutEditor extends ListActivity {
 	
-	private static boolean 					  DEBUG 		= true; //Turn on/off debug messages
-	static final String 			  		  LOGCATNAME 	= "WODWhacker";//Debug message log name
+	private static boolean 					  DEBUG = true; //Turn on/off debug messages
+	static final String 			  		  LOGCATNAME = "WODWhacker";//Debug message log name
 	ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises;//List of exercises displayed that constitute this workout.  
 	List<String> 							  mDisplayedDialogExercise;//List of exercises which you can select from drop down menu to append to list.
 	List<Exercise>							  mExercises;//List of exercises, clean all this up -htormey
 	private String 							  mUsername;
 	private String 							  mPassword;
-	private SyncTask 						  mSyncTask  = new SyncTask();//Movw this later -htormey 
+	private SyncTask 						  mSyncTask = new SyncTask();//Move this later -htormey 
 	//Replace this with SimpleCursorAdapter or own custom implementation based on this. -htormey
 	private SimpleAdapter 					  mWorkOutEditorAdapter;
 	private SnapticAPI						  mApi;
+	private Boolean 						isSyncing = false;//clean up -htormey
 	//Singleton pattern user to perserve state, needed because activities can get destroyed at any time.
 	private StateHolder 					  mStateHolder;
 	//Delete the private variables below here as I am just experimenting
-	private static int WORKOUT_EDITOR = 0, EXERCISE_PROPERTIES = 1, ASYNC_TASK = 2 ;
+	private static int WORKOUT_EDITOR = 0, EXERCISE_PROPERTIES = 1, ASYNC_TASK = 2, REQUEST_RESULT_SIGN_IN = 3;
 	
-	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	  getMenuInflater().inflate(R.menu.main_menu, menu);
+	  return super.onCreateOptionsMenu(menu);
+	}
+
+	  
 	//Return instances of stateholder object used to preserve selected state between activities recreates.  
     @Override
     public Object onRetainNonConfigurationInstance() {
         return mStateHolder;
     }
     
+    
+   @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.menu_item_sync:
+    	// Sync only if we're not already syncing.
+    	if (!isSyncing) {
+	    	ConnectivityManager cm = (ConnectivityManager)
+	    				getSystemService(Context.CONNECTIVITY_SERVICE);
+	    	
+	    	// Don't bother initiating a sync if there is no connectivity.
+	    	if (cm != null && cm.getActiveNetworkInfo() != null) {
+	    		parseDataFromSnaptic();  
+	    	} else {
+	    		Toast.makeText(getListView().getContext(),
+	    				R.string.toast_no_network,
+	    				Toast.LENGTH_SHORT).show();  
+	    	}
+    	}
+    	
+        return true;
+
+      case R.id.menu_item_settings: {
+     //   startActivity(new Intent(NotePreferences.SETTINGS));
+    	  startActivityForResult(new Intent("com.snaptic.WODWhacker.intent.action.SIGN_IN"), REQUEST_RESULT_SIGN_IN);
+        return true;
+      }
+
+    }
+
+    
+    return super.onOptionsItemSelected(item);
+  }
+
+ 
+    /*	// Our message handler.
+     //Centralize error handling/Logging?
+    	private static final int SYNC_SUCCESS = 0;
+	private static final int SYNC_FAIL = 1;
+	private static final int SYNC_ERROR = 2;
+	private static final int SYNC_ERROR_RESPONSE = 3;
+	private static final int RESET_ERROR = 4;
+	private static final int RESET_SUCCESS = 5;
+	private static final int DO_SYNC	 = 6;
+
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Button signInButton = (Button)findViewById(R.id.sign_in_button);
+			
+			switch (msg.what) {
+				case LOGIN_FAIL:
+				    Toast.makeText(getApplicationContext(),
+				    		R.string.sign_in_failed,
+				    		Toast.LENGTH_LONG).show();
+
+					signInButton.setEnabled(true);
+					signInButton.setText(R.string.snaptic_sign_in_button);
+				    
+					break;
+				case LOGIN_SUCCESS:
+					Toast.makeText(getApplicationContext(),
+							R.string.sign_in_success,
+							Toast.LENGTH_SHORT).show();
+					setResult(RESULT_OK);
+					finish();
+					break;
+				case LOGIN_ERROR:
+				    Toast.makeText(getApplicationContext(),
+				    		R.string.sign_in_error,
+				    		Toast.LENGTH_LONG).show();
+					signInButton.setEnabled(true);
+					signInButton.setText(R.string.snaptic_sign_in_button);
+					break;
+				case LOGIN_ERROR_RESPONSE:
+				    Toast.makeText(getApplicationContext(),
+				    		R.string.sign_in_error,
+				    		Toast.LENGTH_LONG).show();
+				    Log.e(getString(R.string.app_name), "problem with API response attempting sign-in");
+					signInButton.setEnabled(true);
+					signInButton.setText(R.string.snaptic_sign_in_button);
+					break;
+				case RESET_SUCCESS:
+					Toast.makeText(getApplicationContext(),
+							R.string.sign_in_reset_password_success,
+							Toast.LENGTH_LONG).show();
+					break;
+				case RESET_ERROR:
+				    Toast.makeText(getApplicationContext(),
+				    		R.string.sign_in_reset_password_error,
+				    		Toast.LENGTH_LONG).show();
+					break;
+				case DO_LOGIN:
+				    signIn();
+					break;
+				default:
+					super.handleMessage(msg);
+					break;
+			}
+		}
+	};
+*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -129,8 +245,7 @@ public class WorkoutEditor extends ListActivity {
 	//Process intent returned from dialog used for setting attributes of a given exercise. (i.e number of situps etc)
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 
-		if(resultCode == RESULT_OK && requestCode ==  WORKOUT_EDITOR){
-			
+		if(resultCode == RESULT_OK && requestCode == WORKOUT_EDITOR){
 
 			String exerciseTitle					= data.getStringExtra("EXERCISE_TITLE");
 			String exerciseTextArea   				= data.getStringExtra("EXERCISE_TEXT_AREA");
@@ -140,7 +255,6 @@ public class WorkoutEditor extends ListActivity {
 			int weightOrDistance   	 				= data.getIntExtra("EXERCISE_DISTANCE_OR_WEIGHT", 0);
 			int exerciseUnit   						= data.getIntExtra("EXERCISE_UNIT", 0);
 			
-
 			if(DEBUG)Log.d(LOGCATNAME, "onActivityResult EXERCISE_TITLE: " + exerciseTitle );
 			if(DEBUG)Log.d(LOGCATNAME, "onActivityResult EXERCISE_TEXT_AREA: " + exerciseTextArea );
 			if(DEBUG)Log.d(LOGCATNAME, "onActivityResult EXERCISE_TEXT_AREA_CONTENTS: " + exerciseTextAreaContents );
@@ -187,6 +301,20 @@ public class WorkoutEditor extends ListActivity {
 		        mWorkOutEditorAdapter.notifyDataSetChanged();				
 			}
 		}
+		else if (resultCode == RESULT_OK && requestCode == REQUEST_RESULT_SIGN_IN) {
+			if(DEBUG)Log.d(LOGCATNAME, "Got Response from sign in." );
+			AndroidAccount holder = AccountUtil.loadAndroidAccount(getApplicationContext());
+			if(DEBUG)Log.d(LOGCATNAME, "Account information: " + holder.toString() );			
+			mStateHolder.mUsername = mUsername = holder.getUsername();
+			mStateHolder.mPassword = mPassword = holder.getPassword();
+			//Should I do a sync here?
+			 parseDataFromSnaptic();
+		}
+		else
+		{
+			if(DEBUG)Log.d(LOGCATNAME, "Got Response with resultCode: " + resultCode + " requestCode: " +  requestCode);
+			
+		}
 	}
 	
 	//Load a bunch of pre defined exercises into the snaptic account. Only called if nothing is found.
@@ -195,6 +323,7 @@ public class WorkoutEditor extends ListActivity {
 		int returnCode = 0;
 		Boolean result = false;
 		
+		//Foreach, probably not a good idea re performance -htormey
 		for (Exercise post : mExercises){
 			SnapticNote note = new SnapticNote();
 			note.text		 = post.serializeExerciseForSnaptic();
@@ -215,7 +344,7 @@ public class WorkoutEditor extends ListActivity {
 	
 	//Take list of displayed workouts, parse and write it to snaptic backend. This is a bit ghetto clean up-htormey 
 	private Boolean serializeWorkoutAndPostToSnapticAccountStorage(){
-		
+		//This is very brittle right now and will be changed -htormey
 		EditText title 	= (EditText) findViewById(R.id.WODTITLETXTAREA);
 		String workOutString  	= new String();
 		String titleFromTextArea = title.getText().toString();
@@ -269,7 +398,9 @@ public class WorkoutEditor extends ListActivity {
 		 * First populate the list of exercises with a bunch of predefined exercises, this
 		 * will be loaded from a db in future. 
 		 * */
-		mExercises = new ArrayList<Exercise>();
+
+		mDisplayedDialogExercise 	= new ArrayList<String>();
+		mExercises 					= new ArrayList<Exercise>();
 		Exercise e 		= new Exercise("Run", Exercise.DISTANCE, Exercise.METRIC);
 		mExercises.add(e);
 		mDisplayedDialogExercise.add(e.title);
@@ -288,8 +419,13 @@ public class WorkoutEditor extends ListActivity {
 		
 		//Now kick off an async task in the background to fetch exercise descriptions from the 
 		//snaptic backend. 
-		 mSyncTask.execute(mUsername, mPassword);
-		
+		//Create function to test if username/password valid
+		if(mUsername != null && mPassword != null){
+			mSyncTask.execute(mUsername, mPassword);
+		}
+		else{//Replace this with toast/clean up?
+			if(DEBUG)Log.d(LOGCATNAME, "No username and password so populating list from local data source");
+		}
 	}
 	
 	//change this to take a dialog number. -htormey
@@ -303,7 +439,7 @@ public class WorkoutEditor extends ListActivity {
 				if(which >= 0){
 					Intent intent = new Intent(getApplicationContext(), ExerciseProperties.class);
 					mExercises.get((which)).serializeExerciseForIntent(intent);
-					startActivityForResult(intent, 0);
+					startActivityForResult(intent, WORKOUT_EDITOR);
 				}  
             }
         })
@@ -392,6 +528,7 @@ public class WorkoutEditor extends ListActivity {
 		saveWorkout.setText("Save workout");
 		saveWorkout.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+            	if(DEBUG)Log.d(LOGCATNAME, "!!!!!!!!---> START USERNAME AND PASSWORD <----!!!!!");
             	serializeWorkoutAndPostToSnapticAccountStorage();
             }
         });
@@ -536,8 +673,8 @@ public class WorkoutEditor extends ListActivity {
 		ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		= new ArrayList<HashMap<String, String>>();//List of exercises displayed that constitute this workout.  
 		List<String> 							  mDisplayedDialogExercise		= new ArrayList<String>();//List of exercises which yout can select from drop down menu to append to list.
 		List<Exercise>							  mExercises					= new ArrayList<Exercise>();//List of exercises, clean all this up -htormey
-		private String 							  mUsername 					= "";//Add your username here
-		private String 							  mPassword						= "";//Add your password here
+		private String 							  mUsername;//Add your username here
+		private String 							  mPassword;//Add your password here
 		private SnapticAPI 						  mApi							= new SnapticAPI(mUsername, mPassword);
     }
 }

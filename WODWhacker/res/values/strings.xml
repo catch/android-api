@@ -1,7 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--  General Strings -->
     <string name="hello">Hello World, WODWhackerActivity!</string>
     <string name="app_name">WODWhacker</string>
     <string name="wod_edit">WODEdit</string>
     <string name="new_workout">Track Workout</string>
+    
+       <!--  Snaptic Sign-In -->
+    <string name="snaptic_sign_in_title">Snaptic Sign-In</string>
+    <string name="snaptic_sign_in_text">Sign-in to your account</string>
+    <string name="snaptic_sign_in_user_hint">Your email or username</string>
+    <string name="snaptic_sign_in_password_hint">Your password</string>
+    <string name="snaptic_sign_in_button">Sign in</string>
+    <string name="snaptic_sign_in_forgot_password_text">&lt;u>I forgot my password!&lt;/u></string>
+    <string name="snaptic_sign_in_google_text">&lt;u>Where is Google sign-in?&lt;/u></string>
+    <string name="snaptic_verify_email_dialog_title">Password reset</string>
+    <string name="snaptic_verify_email_dialog_description">Enter the email address associated with your Snaptic account.</string>
+    <string name="snaptic_verify_email_dialog_hint">Your email address</string>
+    <string name="snaptic_verify_email_dialog_button">Reset my password</string>
+    <string name="sign_in_start">Signing in...</string>
+    <string name="sign_in_success">Sign-in successful, syncing...</string>
+    <string name="sign_in_failed">Unable to sign in. Verify that your email address and password are correct.</string>
+    <string name="sign_in_error">Unable to sign in. Please try again, or contact Snaptic for support if the problem persists.</string>
+    <string name="sign_in_reset_password_success">Check your email for further instructions to complete your password reset.</string>
+    <string name="sign_in_reset_password_error">Unable to initiate password reset. Please try again, or contact Snaptic for support if the problem persists.</string>
+    <string name="snaptic_sign_in_toast_no_network">No network connectivity!</string>
+
+    <!--  Snaptic Sign-Out -->
+    <string name="snaptic_logout_dialog_title">Snaptic Sign-out</string>
+    <string name="snaptic_logout_dialog_message">Do you want to keep your notes on this device after you sign out?</string>
+    <string name="snaptic_logout_dialog_message_pending">Do you want to keep your notes on this device after you sign out?\n\nYou have changes that are not synced; these will be lost if your clear notes from this device.</string>
+    <string name="snaptic_logout_choice_keep_notes">Keep notes</string>
+    <string name="snaptic_logout_choice_clear_notes">Clear notes</string>
+    
+        <!--  Menu Strings -->
+    <string name="menu_item_sync_label">Sync</string>
+	<string name="menu_item_settings_label">Settings</string>
+	
+	<string name="toast_no_network">No network connectivity!</string>
 </resources>

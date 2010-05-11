@@ -12,34 +12,86 @@ public final class R {
     }
     public static final class drawable {
         public static final int icon=0x7f020000;
+        public static final int snaptic_logo=0x7f020001;
+        public static final int sync=0x7f020002;
     }
     public static final class id {
-        public static final int ACTION=0x7f05000a;
-        public static final int DELWOD=0x7f050006;
-        public static final int EXECANCEL=0x7f050005;
-        public static final int EXENUMEDIT=0x7f050001;
-        public static final int EXENUMWEIGHTEDIT=0x7f050002;
-        public static final int EXEOK=0x7f050004;
-        public static final int EXETITLE=0x7f050000;
-        public static final int EXEUNITM=0x7f050003;
-        public static final int NUM_WOD=0x7f050008;
-        public static final int WEIGHT_DISTANCE=0x7f050009;
-        public static final int WOD=0x7f050007;
-        public static final int WODADDEXERCISE=0x7f05000e;
-        public static final int WODTITLE=0x7f05000c;
-        public static final int WODTITLETXTAREA=0x7f05000d;
-        public static final int txtWODs=0x7f05000b;
+        public static final int ACTION=0x7f060013;
+        public static final int DELWOD=0x7f06000f;
+        public static final int EXECANCEL=0x7f060005;
+        public static final int EXENUMEDIT=0x7f060001;
+        public static final int EXENUMWEIGHTEDIT=0x7f060002;
+        public static final int EXEOK=0x7f060004;
+        public static final int EXETITLE=0x7f060000;
+        public static final int EXEUNITM=0x7f060003;
+        public static final int NUM_WOD=0x7f060011;
+        public static final int WEIGHT_DISTANCE=0x7f060012;
+        public static final int WOD=0x7f060010;
+        public static final int WODADDEXERCISE=0x7f060017;
+        public static final int WODTITLE=0x7f060015;
+        public static final int WODTITLETXTAREA=0x7f060016;
+        public static final int create_account_buttonbar=0x7f06000a;
+        public static final int menu_item_settings=0x7f060019;
+        public static final int menu_item_sync=0x7f060018;
+        public static final int sign_in_button=0x7f06000b;
+        public static final int sign_in_forgot_password=0x7f06000c;
+        public static final int sign_in_google=0x7f06000d;
+        public static final int sign_in_logo=0x7f060006;
+        public static final int sign_in_password=0x7f060009;
+        public static final int sign_in_text=0x7f060007;
+        public static final int sign_in_user=0x7f060008;
+        public static final int txtWODs=0x7f060014;
+        public static final int verify_email_dialog_edittext=0x7f06000e;
     }
     public static final class layout {
         public static final int exercise_properties=0x7f030000;
-        public static final int wod_list=0x7f030001;
-        public static final int wod_row=0x7f030002;
-        public static final int workout_editor=0x7f030003;
+        public static final int sign_in=0x7f030001;
+        public static final int verify_email=0x7f030002;
+        public static final int wod_list=0x7f030003;
+        public static final int wod_row=0x7f030004;
+        public static final int workout_editor=0x7f030005;
+    }
+    public static final class menu {
+        public static final int main_menu=0x7f050000;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
+        /**   General Strings 
+         */
         public static final int hello=0x7f040000;
+        public static final int menu_item_settings_label=0x7f04001c;
+        /**   Menu Strings 
+         */
+        public static final int menu_item_sync_label=0x7f04001b;
         public static final int new_workout=0x7f040003;
+        public static final int sign_in_error=0x7f040012;
+        public static final int sign_in_failed=0x7f040011;
+        public static final int sign_in_reset_password_error=0x7f040014;
+        public static final int sign_in_reset_password_success=0x7f040013;
+        public static final int sign_in_start=0x7f04000f;
+        public static final int sign_in_success=0x7f040010;
+        public static final int snaptic_logout_choice_clear_notes=0x7f04001a;
+        public static final int snaptic_logout_choice_keep_notes=0x7f040019;
+        public static final int snaptic_logout_dialog_message=0x7f040017;
+        public static final int snaptic_logout_dialog_message_pending=0x7f040018;
+        /**   Snaptic Sign-Out 
+         */
+        public static final int snaptic_logout_dialog_title=0x7f040016;
+        public static final int snaptic_sign_in_button=0x7f040008;
+        public static final int snaptic_sign_in_forgot_password_text=0x7f040009;
+        public static final int snaptic_sign_in_google_text=0x7f04000a;
+        public static final int snaptic_sign_in_password_hint=0x7f040007;
+        public static final int snaptic_sign_in_text=0x7f040005;
+        /**   Snaptic Sign-In 
+         */
+        public static final int snaptic_sign_in_title=0x7f040004;
+        public static final int snaptic_sign_in_toast_no_network=0x7f040015;
+        public static final int snaptic_sign_in_user_hint=0x7f040006;
+        public static final int snaptic_verify_email_dialog_button=0x7f04000e;
+        public static final int snaptic_verify_email_dialog_description=0x7f04000c;
+        public static final int snaptic_verify_email_dialog_hint=0x7f04000d;
+        public static final int snaptic_verify_email_dialog_title=0x7f04000b;
+        public static final int toast_no_network=0x7f04001d;
         public static final int wod_edit=0x7f040002;
     }
 }
