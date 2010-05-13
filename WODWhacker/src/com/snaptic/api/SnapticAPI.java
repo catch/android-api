@@ -178,7 +178,7 @@ public class SnapticAPI {
 
 	/**
 	 * Get notes from users account that match query string.
-	 * 
+	 *  
 	 * @param String query search for notes that match this string.
 	 * @param ArrayList<SnapticNote> notes reference to an array of SnapticNote where fetched
 	 * notes will be placed.
