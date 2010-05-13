@@ -85,12 +85,12 @@ public class SnapticAPI {
 	private static final String ENCODING = "UTF-8";
 	private static final String USER_AGENT = "SnapticAPI; Java; (Android)";
 	private String defaultSource = "android-lib";
-
+    private static final String API_ENDPOINT_PASSWORD_RESET = "/forgotPassword.action";
 	private static final String SNAPTIC_BASE_URL = "https://api.snaptic.com";
 	private static final String API_ENDPOINT_ACCOUNT_INFO = "/v1/user";
 	private static final String API_ENDPOINT_NOTES = "/v1/notes";
 	private static final String API_ENDPOINT_IMAGES = "/v1/images";
-
+	private static final String API_ENDPOINT_SEARCH = "/v1/search.xml?q=";
 	// Enable this for extra API call tracing output in the logcat.
 	private static final boolean API_TRACING_OUTPUT_ENABLED = true;//false;
 	private static final String LOGCAT_NAME = "SnapticAPI";
@@ -176,6 +176,54 @@ public class SnapticAPI {
 		return returnCode;
 	}
 
+	/**
+	 * Get notes from users account that match query string.
+	 * 
+	 * @param String query search for notes that match this string.
+	 * @param ArrayList<SnapticNote> notes reference to an array of SnapticNote where fetched
+	 * notes will be placed.
+	 * @return int returnCode enum code indicating whether call was successful or not.
+	 * */
+	public int searchNotes(String query, ArrayList<SnapticNote> notes) {
+		int returnCode = RESULT_ERROR;
+
+		if (notes == null || query == null ) {
+			return returnCode;
+		}
+		
+		String endpoint = API_ENDPOINT_SEARCH + query;
+		HttpResponse response = performGET(endpoint, null);
+		
+		if (response != null) {
+			if (isResponseOK(response)) {
+				boolean parseResult = false;
+
+				try {
+					SnapticNotesXmlParser xmlParser = new SnapticNotesXmlParser();
+					xmlParser.parseNotesXml(response, notes);
+					sync_trace("parsed " + notes.size() + " notes");
+					parseResult = true;
+				} catch (IllegalArgumentException e) {
+					log("caught an IllegalArgumentException processing response from GET " + endpoint);
+					e.printStackTrace();
+				} catch (XmlPullParserException e) {
+					log("caught an XmlPullParserException processing response from GET " + endpoint);
+					e.printStackTrace();
+				} catch (IOException e) {
+					log("caught an IOException processing response from GET " + endpoint);
+					e.printStackTrace();
+				}
+
+				returnCode = (parseResult == true) ? RESULT_OK : RESULT_ERROR_RESPONSE;
+			} else if (isResponseUnauthorized(response)) {
+				returnCode = RESULT_UNAUTHORIZED;
+			}
+
+			consumeResponse(response);
+		}
+		
+		return returnCode;
+	}
 	/**
 	 * Get notes from users account.
 	 *
@@ -490,6 +538,27 @@ public class SnapticAPI {
 			}
 
 			consumeResponse(response);
+		}
+
+		return returnCode;
+	}
+
+	public int resetPassword(String email) {
+		int returnCode = RESULT_ERROR;
+		HttpResponse response = null;
+
+		if (email != null && email.length() > 0) {              
+			List <NameValuePair> params = new ArrayList <NameValuePair>();
+			params.add(new BasicNameValuePair("email", email));
+			response = performPOST(API_ENDPOINT_PASSWORD_RESET, params, null);
+
+			if (response != null) {
+				if (isResponseOK(response)) {
+					returnCode = RESULT_OK;
+				}
+
+				consumeResponse(response);
+			}
 		}
 
 		return returnCode;
