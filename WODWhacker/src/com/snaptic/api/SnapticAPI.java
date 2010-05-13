@@ -90,7 +90,7 @@ public class SnapticAPI {
 	private static final String API_ENDPOINT_ACCOUNT_INFO = "/v1/user";
 	private static final String API_ENDPOINT_NOTES = "/v1/notes";
 	private static final String API_ENDPOINT_IMAGES = "/v1/images";
-	private static final String API_ENDPOINT_SEARCH = "/v1/search.xml?q=";
+	private static final String API_ENDPOINT_SEARCH = "/v1/search.xml";//"/v1/search.xml?q=";
 	// Enable this for extra API call tracing output in the logcat.
 	private static final boolean API_TRACING_OUTPUT_ENABLED = true;//false;
 	private static final String LOGCAT_NAME = "SnapticAPI";
@@ -191,8 +191,10 @@ public class SnapticAPI {
 			return returnCode;
 		}
 		
-		String endpoint = API_ENDPOINT_SEARCH + query;
-		HttpResponse response = performGET(endpoint, null);
+		String endpoint = API_ENDPOINT_SEARCH;
+		List <NameValuePair> params = new ArrayList <NameValuePair>();
+		params.add(new BasicNameValuePair("q", query));
+		HttpResponse response = performGET(endpoint, params);
 		
 		if (response != null) {
 			if (isResponseOK(response)) {
