@@ -1,4 +1,4 @@
-	package com.snaptic.WODWhacker;
+package com.snaptic.WODWhacker;
 /*
  * Copyright (c) 2010 Snaptic, Inc
  *
@@ -26,6 +26,7 @@
  * account username/password in the stateholder object below.
  * Harry Tormey   <harry@snaptic.com>
  */
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -88,7 +90,7 @@ public class WorkoutEditor extends ListActivity {
 	//Replace this with SimpleCursorAdapter or own custom implementation based on this. -htormey
 	private SimpleAdapter 					  mWorkOutEditorAdapter;
 	private SnapticAPI						  mApi;
-	private Boolean 						isSyncing = false;//clean up -htormey
+	private Boolean 						  isSyncing = false;//clean up -htormey
 	//Singleton pattern user to perserve state, needed because activities can get destroyed at any time.
 	private StateHolder 					  mStateHolder;
 	//Delete the private variables below here as I am just experimenting
@@ -99,15 +101,13 @@ public class WorkoutEditor extends ListActivity {
 	  getMenuInflater().inflate(R.menu.main_menu, menu);
 	  return super.onCreateOptionsMenu(menu);
 	}
-
-	  
+  
 	//Return instances of stateholder object used to preserve selected state between activities recreates.  
     @Override
     public Object onRetainNonConfigurationInstance() {
         return mStateHolder;
     }
-    
-    
+        
    @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
@@ -604,8 +604,8 @@ public class WorkoutEditor extends ListActivity {
 		ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		= new ArrayList<HashMap<String, String>>();//List of exercises displayed that constitute this workout.  
 		List<String> 							  mDisplayedDialogExercise		= new ArrayList<String>();//List of exercises which yout can select from drop down menu to append to list.
 		List<Exercise>							  mExercises					= new ArrayList<Exercise>();//List of exercises, clean all this up -htormey
-		private String 							  mUsername;//Add your username here
-		private String 							  mPassword;//Add your password here
+		private String 							  mUsername = "testingaccount123"; //Add your username here
+		private String 							  mPassword = "abc123";//Add your password here
 		private SnapticAPI 						  mApi							= new SnapticAPI(mUsername, mPassword);
     }
 }

@@ -34,6 +34,7 @@ public class SnapticImage {
 	public long id;
 	public int order;
 	public String md5;
+	public long revision_id;
 	
 	public SnapticImage() {
 		width = 0;
@@ -42,14 +43,16 @@ public class SnapticImage {
 		id = -1;
 		order = -1;
 		md5 = null;
+		revision_id = -1;
 	}
 	
-	public SnapticImage(long id, String src, int width, int height, int order, String md5) {
+	public SnapticImage(long id, String src, int width, int height, int order, String md5, long revision_id) {
 		this.width = width;
 		this.height = height;
 		this.src = src;
 		this.id = id;
 		this.order = order;
 		this.md5 = md5;
+		this.revision_id = revision_id;
 	}	
 }

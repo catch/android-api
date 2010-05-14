@@ -76,6 +76,7 @@ public class SnapticNotesXmlParser {
 	private static final String XML_TAG_HEIGHT = "height";
 	private static final String XML_TAG_ORDER = "order";
 	private static final String XML_TAG_MD5 = "md5";
+	private static final String XML_TAG_REVISION_ID = "revision_id";
 	private static final String XML_TAG_LOCATION = "location";
 	private static final String XML_TAG_LATITUDE = "latitude";
 	private static final String XML_TAG_LONGITUDE = "longitude";
@@ -129,6 +130,8 @@ public class SnapticNotesXmlParser {
 				if (XML_TAG_NOTE.equals(startTag)) {
 					parse_trace("Parsing a note.");
 					parseNote(parser, notes);
+				} else {
+					parse_trace("(parseNotesXml) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
@@ -221,16 +224,16 @@ public class SnapticNotesXmlParser {
 				} else if (XML_TAG_MEDIA.equals(startTag)) {
 					parse_trace("Parsing media list.");
 					parseMedia(parser, note);
+				} else {
+					parse_trace("(parseNote) unknown XML tag: <" + startTag + ">");
 				}
-
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
 
 				if (XML_TAG_NOTE.equals(endTag)) {
 					parse_trace("Parsing note complete.");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();
@@ -250,6 +253,8 @@ public class SnapticNotesXmlParser {
 					String tag = parser.nextText();
 					tags.add(tag);
 					parse_trace("Added tag \"" + tag + '"');
+				} else {
+					parse_trace("(parseTags) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
@@ -258,9 +263,8 @@ public class SnapticNotesXmlParser {
 					note.tags = tags;
 					parse_trace("Note had " + note.tags.size()
 							+ " tag(s).");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();
@@ -278,15 +282,16 @@ public class SnapticNotesXmlParser {
 				if (XML_TAG_IMAGE.equals(startTag)) {
 					parse_trace("Parsing an image.");
 					parseImage(parser, note);
+				} else {
+					parse_trace("(parseMedia) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
 
 				if (XML_TAG_MEDIA.equals(endTag)) {
 					parse_trace("Parsing media list complete.");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();
@@ -326,6 +331,12 @@ public class SnapticNotesXmlParser {
 					String md5 = parser.nextText();
 					image.md5 = md5;
 					parse_trace("Image MD5 = " + md5);
+				} else if (XML_TAG_REVISION_ID.equals(startTag)) {
+					long revision_id = Long.parseLong(parser.nextText());
+					image.revision_id = revision_id;
+					parse_trace("Image revision ID = " + image.revision_id);
+				} else {
+					parse_trace("(parseImage) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
@@ -339,9 +350,8 @@ public class SnapticNotesXmlParser {
 
 					mediaList.add(image);
 					parse_trace("Parsing image complete.");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();
@@ -364,15 +374,16 @@ public class SnapticNotesXmlParser {
 					String owner = parser.nextText();
 					note.owner = owner;
 					parse_trace("Owner name = " + note.owner);
+				} else {
+					parse_trace("(parseNoteOwner) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
 
 				if (XML_TAG_USER.equals(endTag)) {
 					parse_trace("Parsing owner data complete.");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();
@@ -419,15 +430,16 @@ public class SnapticNotesXmlParser {
 					note.accuracyAltitude = accuracyAltitude;
 					parse_trace("Altitude accuracy = "
 							+ note.accuracyAltitude);
+				} else {
+					parse_trace("(parseLocation) unknown XML tag: <" + startTag + ">");
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				String endTag = parser.getName();
 
 				if (XML_TAG_LOCATION.equals(endTag)) {
 					parse_trace("Parsing geotag complete.");
+					break;
 				}
-
-				break;
 			}
 
 			eventType = parser.next();

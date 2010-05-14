@@ -397,7 +397,7 @@ public class SignInActivity extends Activity {
 				retval = RESET_ERROR;
 				
 				try {
-		/*			int result = snapticAPI.resetPassword(params[0]);
+					int result = snapticAPI.resetPassword(params[0]);
 	
 					switch (result) {
 						case SnapticAPI.RESULT_OK:
@@ -406,7 +406,7 @@ public class SignInActivity extends Activity {
 						case SnapticAPI.RESULT_ERROR:
 						default:
 							break;
-					}*/
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
