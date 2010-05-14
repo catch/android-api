@@ -39,6 +39,7 @@ import com.snaptic.account.AccountUtil;
 import com.snaptic.account.AndroidAccount;
 import com.snaptic.api.SnapticAPI;
 import com.snaptic.api.SnapticNote;
+import com.snaptic.WODWhacker.GeoUtil;
 
 import android.app.AlertDialog.Builder;
 import android.app.AlertDialog;
@@ -47,12 +48,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,6 +98,14 @@ public class WorkoutEditor extends ListActivity {
 	private Boolean 						  isSyncing = false;//clean up -htormey
 	//Singleton pattern user to perserve state, needed because activities can get destroyed at any time.
 	private StateHolder 					  mStateHolder;
+	
+	//Location related member variables
+	private LocationManager mLocationManager;
+	private GeoUtil mGeoUtil;
+	private static final int LOCATION_UPDATE_INTERVAL_MILLIS = 5000;
+	private static final float LOCATION_UPDATE_DISTANCE_METERS = 10;
+	private Location externalLocation = null;
+	  
 	//Delete the private variables below here as I am just experimenting
 	private static int WORKOUT_EDITOR = 0, EXERCISE_PROPERTIES = 1, ASYNC_TASK = 2, REQUEST_RESULT_SIGN_IN = 3;
 	
@@ -139,7 +152,34 @@ public class WorkoutEditor extends ListActivity {
     
     return super.onOptionsItemSelected(item);
   }
+   
+   @Override
+   protected void onPause() {
+ 	  mLocationManager.removeUpdates(mGeoUtil);
+ 	  super.onPause();
+   }
+   
+   @Override
+   protected void onResume() {
+ 	  super.onResume();
+ 	  //Pull this from shared preferences later -htormey
+  	  boolean geotagging = true;
 
+ 	  if (geotagging && externalLocation == null) {
+ 		  // Register for location updates
+ 		  mLocationManager.requestLocationUpdates(
+ 				  LocationManager.NETWORK_PROVIDER,
+ 				  LOCATION_UPDATE_INTERVAL_MILLIS,
+ 				  LOCATION_UPDATE_DISTANCE_METERS, mGeoUtil);
+ 		  mLocationManager.requestLocationUpdates(
+ 				  LocationManager.GPS_PROVIDER,
+ 				  LOCATION_UPDATE_INTERVAL_MILLIS,
+ 				  LOCATION_UPDATE_DISTANCE_METERS, mGeoUtil);
+ 	  } else {
+ 		  mLocationManager.removeUpdates(mGeoUtil);
+ 	  }
+   }
+   
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -147,6 +187,10 @@ public class WorkoutEditor extends ListActivity {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.workout_editor);
         
+        //Location stuff
+        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mGeoUtil = new GeoUtil(getApplicationContext());
+ 	  
         if(getLastNonConfigurationInstance() != null){
         	if (DEBUG) Log.d(LOGCATNAME, "Using last non configuration instance.");
             mStateHolder 				= (StateHolder)getLastNonConfigurationInstance();
@@ -164,7 +208,6 @@ public class WorkoutEditor extends ListActivity {
         	mUsername					= mStateHolder.mUsername;
         	mPassword					= mStateHolder.mPassword;
         	mApi						= mStateHolder.mApi;
-
         }
         
         parseDataFromSnaptic();
@@ -604,8 +647,8 @@ public class WorkoutEditor extends ListActivity {
 		ArrayList<HashMap<String, String>> 		  mDisplayedListOfExercises		= new ArrayList<HashMap<String, String>>();//List of exercises displayed that constitute this workout.  
 		List<String> 							  mDisplayedDialogExercise		= new ArrayList<String>();//List of exercises which yout can select from drop down menu to append to list.
 		List<Exercise>							  mExercises					= new ArrayList<Exercise>();//List of exercises, clean all this up -htormey
-		private String 							  mUsername = "testingaccount123"; //Add your username here
-		private String 							  mPassword = "abc123";//Add your password here
+		private String 							  mUsername; //Add your username here
+		private String 							  mPassword;//Add your password here
 		private SnapticAPI 						  mApi							= new SnapticAPI(mUsername, mPassword);
     }
 }
