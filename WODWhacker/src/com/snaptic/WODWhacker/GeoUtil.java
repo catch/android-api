@@ -7,7 +7,34 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.SystemClock;
+/*
+ * Copyright (c) 2010 Snaptic, Inc
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * http://snaptic.com GeoUtility
+ * 
+ * Hugh Johnson   <hugh@snaptic.com>
+ * Harry Tormey   <harry@snaptic.com>
+ */
 
+/**
+ * @author Hugh Johnson
+ * @author Harry Tormey
+ * @version 0.1
+ * 
+ * A library that provides a Java interface to the Snaptic API
+ */
 public class GeoUtil implements LocationListener {
 	public static int MILLION = 1000000;
 	private static final long RETAIN_GPS_MILLIS = 30000L;
