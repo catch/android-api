@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.SystemClock;
+
 /*
  * Copyright (c) 2010 Snaptic, Inc
  *

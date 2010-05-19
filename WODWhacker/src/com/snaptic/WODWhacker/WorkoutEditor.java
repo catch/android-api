@@ -49,6 +49,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -108,6 +110,8 @@ public class WorkoutEditor extends ListActivity {
 	  
 	//Delete the private variables below here as I am just experimenting
 	private static int WORKOUT_EDITOR = 0, EXERCISE_PROPERTIES = 1, ASYNC_TASK = 2, REQUEST_RESULT_SIGN_IN = 3;
+	private final String PACKAGE_NAME     		= "com.snaptic.WODWhacker";//Is their a way to get this at runtime? -htormey
+	static final String KEY_VERSION_AUTOUPDATE = "preferences_version_autoupdate";
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -210,12 +214,26 @@ public class WorkoutEditor extends ListActivity {
         	mApi						= mStateHolder.mApi;
         }
         
+        scheduleUpdateOnFirstLaunch();
         parseDataFromSnaptic();
         bindDataToList();
         bindDataToExerciseChoicesButton();
 	}
 	
-
+	private void scheduleUpdateOnFirstLaunch() {
+		   try {
+		      PackageInfo info = getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+		      int currentVersion = info.versionCode;
+		      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		      int lastVersion = prefs.getInt(KEY_VERSION_AUTOUPDATE, 0);
+		      if (currentVersion > lastVersion) {
+		        prefs.edit().putInt(KEY_VERSION_AUTOUPDATE, currentVersion).commit();
+		        AutoUpdate.schedule(this);
+		      }
+		    } catch (PackageManager.NameNotFoundException e) {
+		
+		    }
+		  }
 	//Process intent returned from dialog used for setting attributes of a given exercise. (i.e number of situps etc)
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  General Strings -->
+    <!--  General Strings -->    
     <string name="hello">Hello World, WODWhackerActivity!</string>
     <string name="app_name">WODWhacker</string>
     <string name="wod_edit">WODEdit</string>
@@ -39,4 +39,10 @@
 	<string name="menu_item_settings_label">Settings</string>
 	
 	<string name="toast_no_network">No network connectivity!</string>
+	
+	    <!-- Auto Update -->
+    <string name="auto_update_menu">Application update available</string>
+    <string name="auto_update_title">Application Beta</string>
+    <string name="auto_update_summary">Application is available.</string>
+    
 </resources>
