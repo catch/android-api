@@ -370,6 +370,7 @@ public class SnapticAPI {
 		params.add(new BasicNameValuePair("bearing", Double.toString(note.bearing)));
 		params.add(new BasicNameValuePair("accuracy_position", Double.toString(note.accuracyPosition)));
 		params.add(new BasicNameValuePair("accuracy_altitude", Double.toString(note.accuracyAltitude)));
+		params.add(new BasicNameValuePair("mode", note.mode.toString()));
 
 		String endpoint = API_ENDPOINT_NOTES + ".xml";
 		HttpResponse response = performPOST(endpoint, params, null);
