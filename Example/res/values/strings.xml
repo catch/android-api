@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro">Watch logcat to see the results!\nadb logcat CatchApiDemo:D *:S</string>
+    <string name="sign_in">Sign In</string>
+    <string name="cancel">Cancel</string>
+    <string name="fetch_notes">Fetch Notes</string>
+    <string name="add_new_note">Add New Note</string>
+    <string name="add_note">Add Note</string>
+    <string name="app_name">Catch API Demo</string>
+    <string name="sign_in_dialog_title">Sign in to a Catch.com account</string>
+    <string name="new_note_dialog_title">Enter the text of your note</string>
+</resources>
