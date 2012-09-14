@@ -1,5 +1,5 @@
 # CatchAPI
-CatchAPI is a Java library for Android.  It makes it easy to use the [Catch.com REST API](https://developer.catch.com/docs/rest_overview).  Here's a quick preview...
+CatchAPI is a Java library for Android.  It makes it easy to use the [Catch.com REST API](https://catch.com/developer/v2/).  Here's a quick preview...
 
 ```java
 CatchAPI api = new CatchAPI("MyCoolApp", context);
